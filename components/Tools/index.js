@@ -12,6 +12,7 @@ export default class Tools extends Component {
 	}
 	
   render() {
+		const tileSetRef = React.createRef();
 	return (
 	  <div className="tools-frame">
 		<style jsx>{`
@@ -25,8 +26,8 @@ export default class Tools extends Component {
 				grid-template: "menu" auto "tileset" max-content;
 			}
 		`}</style>
-		<TileSetMenu curTile={this.state.selectedTile} />
-		<TileSet />
+		<TileSetMenu curTile={this.state.selectedTile} tileSetRef={tileSetRef} />
+		<TileSet tileSetRef={tileSetRef} />
 	  </div>
 	)
   }

@@ -33,45 +33,72 @@ export default class TileSet extends Component {
 
 const TileSet = (props) => {
 	// Element Reference
-	const tileSetRef = useRef(null);
+	//const tileSetRef = useRef(props.tileSetRef);
 	const canvasRef = useRef(null);
 
 	// State for this component
 	const [tile, setTile] = useState(null);
-	const [lastX, setLastX] = useState(0);
-	const [lastY, setLastY] = useState(0);
+	const [startX, setstartX] = useState(0);
+	const [startY, setLastY] = useState(0);
+	const [dragging, setDragging] = useState(false);
+
 
 	// MouseOver Canvas Event Handler
 	const handleMouseMove = (e) => {
 		// console.log(e);
-		setLastX(e.clientX - tileSetRef.current.x);
-		setLastY(e.clientY - tileSetRef.current.y);
-		//console.log(lastX, lastY);
+		setstartX(e.clientX - props.tileSetRef.current.x);
+		setLastY(e.clientY - props.tileSetRef.current.y);
+		//console.log(startX, startY);
 		// Update state with current tile mouse if hovering over.
-		setTile([Math.floor(lastX/16), Math.floor(lastY/16)]);
+		setTile([Math.floor(startX/16), Math.floor(startY/16)]);
 
 	};
 
-	const handleMouseClick = (e) => {
+	const handleMouseDown = (e) => {
+		setDragging(true);
+	}
+	const handleMouseUp = (e) => {
+		setDragging(false);
 	}
 
 	// Side Effects
 	useEffect(() => {
+		// Set Canvas to be same size as TileSet
 		if(canvasRef){
 			canvasRef.current.height = document.querySelector('.tileset-image').height;
 			canvasRef.current.width = document.querySelector('.tileset-image').width;
 		}
-		// Reset x, y to NULL if mouse leaves.
-		tileSetRef.current.previousElementSibling.addEventListener('mouseleave', (e) => {
-			setLastX(0);
+
+		// Reset x, y to 0, 0 if mouse leaves. 
+		props.tileSetRef.current.previousElementSibling.addEventListener('mouseleave', (e) => {
+			setstartX(0);
 			setLastY(0);
 		})
+
 		// If Tile: Draw Square at current location
 		if(tile) {
+			// Setup for Canvas
 			const ctx = canvasRef.current.getContext('2d');
-			const [tileX, tileY] = tile;
-			// console.log(tileX, tileY);
-			ctx.strokeStyle = 'rgb(255, 255, 255, 1)';
+			let [tileX, tileY] = tile;
+			var startTileX, startTileY;
+			var boxSizeX, boxSizeY;
+			console.log(tileX, tileY);
+			
+			// mouseDown
+			if(dragging){
+				ctx.strokeStyle = 'rgb(255, 0, 0, 1)';
+				// If mouseDown store Current Tile for Start Position; update Tile for End Position
+				// Calculate Size of Box to Draw. 
+				[startTileX, startTileY] = tile;
+				boxSizeX = startTileX - tileX;
+				boxSizeY = startTileY - tileY;
+				
+			}
+			// mouseUp
+			else {
+				ctx.strokeStyle = 'rgb(255, 255, 255, 1)';
+				[tileX, tileY] = tile;
+			}
 			ctx.strokeRect(tileX*16, tileY*16, 16, 16);
 			ctx.stroke();
 		}
@@ -80,6 +107,7 @@ const TileSet = (props) => {
 		}
 	}, [canvasRef, tile]);
 
+	// Render
 	return (
 		<div className="root">
 			
@@ -94,14 +122,15 @@ const TileSet = (props) => {
 					position: absolute;
 				}
 			`}</style>
-
+			
+			{ dragging ? <canvas ref={canvasRef} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} /> : 
 			<canvas ref={canvasRef} 
-					onMouseMove={handleMouseMove} 
-					onClick={handleMouseClick} 
-			/>
+					onMouseDown={handleMouseDown} 
+					onMouseUp={handleMouseUp} 
+			/> }
 
 			<img 	className="tileset-image"
-					ref={tileSetRef} 
+					ref={props.tileSetRef} 
 					src={"../../../static/" + "tiles.png"} 
 			/>
 		</div>
