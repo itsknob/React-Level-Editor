@@ -1,17 +1,12 @@
-import React, { Component } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import TileSet from './TileSet';
 import TileSetMenu from './TileSetMenu'
 
-export default class Tools extends Component {
-	constructor(props) {
-	  super(props)
-	
-	  this.state = {
-		 selectedTile: [0, 0]
-	  }
-	}
-	
-  render() {
+
+const Tools = (props) => {
+	const tileSetCanvas = useRef(null); 
+
+
 	return (
 	  <div className="tools-frame">
 		<style jsx>{`
@@ -25,9 +20,18 @@ export default class Tools extends Component {
 				grid-template: "menu" auto "tileset" max-content;
 			}
 		`}</style>
-		<TileSetMenu curTile={this.state.selectedTile} />
-		<TileSet />
+		<TileSetMenu 
+			curTile={props.currentTile} 
+			tileSetCanvasRef={tileSetCanvas}	
+		/>
+		<TileSet 
+			currentTile={props.currentTile} 
+			setCurrentTile={props.setCurrentTile} 
+			tileSetCanvasRef={tileSetCanvas} 
+			handleTileUpdate={props.handleTileUpdate}
+		/>
 	  </div>
 	)
-  }
 }
+
+export default Tools

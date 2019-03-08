@@ -11,7 +11,7 @@ export default class Info extends Component {
 				outline-offset: -1px;
 			}
 		`}</style>
-		Info
+		<div>{this.props.currentTile.join(", ")}</div>
 	  </div>
 	)
   }
