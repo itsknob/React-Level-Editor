@@ -15,7 +15,7 @@ const Home = () => {
 		//e.preventDefault();
 		const mx = e.clientX - tileSetCanvas.current.x;
 		const my = e.clientY - tileSetCanvas.current.y;
-		const newTile = [Math.floor(mx/16), Math.floor(my/16)];
+		const newTile = [Math.ceil(mx/16), Math.ceil(my/16)];
 		setCurrentTile(newTile);
 		console.log(`HandleTileUpdate: ${newTile}`);
 	}
